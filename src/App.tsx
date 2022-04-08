@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import './App.css';
 
 function App() {
     const [islandsNumber, setIslandsNumber] = useState(0)
+    const formRef = useRef<HTMLFormElement>(null)
     function countIslands(grid: number[][]) {
         const lengthI = grid[0].length
         const lengthJ = grid.length
@@ -46,6 +47,19 @@ function App() {
         return uniqueGroups.size + single
     }
 
+    const createMatrix = () => {
+        const inputs = formRef?.current?.querySelectorAll('input') ?? []
+
+        inputs.forEach(it => {
+            let random = Math.random();
+            if (random < 0.5)
+                random = 0
+            else
+                random= 1
+            it.value = String(random)
+        })
+    }
+
     const onSubmit = (e: any) => {
         e.preventDefault()
         const lines = e.target.querySelectorAll('div')
@@ -53,13 +67,12 @@ function App() {
         const grid = inputs.map(it => it.map(i => +i.value))
         const islands = countIslands(grid);
         setIslandsNumber(islands)
-        console.log(islands);
     }
 
   return (
     <div className="app">
-        <h1>Fill the table and click 'Submit' to see result</h1>
-        <form onSubmit={(e) => onSubmit(e)}>
+        <form ref={formRef} onSubmit={(e) => onSubmit(e)}>
+            <button onClick={createMatrix}>Create random grid</button>
             <div>
                 <input defaultValue={0} type="number" min={0} max={1} />
                 <input defaultValue={0} type="number" min={0} max={1} />
@@ -95,7 +108,6 @@ function App() {
                 <input defaultValue={0} type="number" min={0} max={1} />
                 <input defaultValue={0} type="number" min={0} max={1} />
             </div>
-            <button type='submit'>Submit</button>
         </form>
         {islandsNumber ? <p>You created {islandsNumber} islands</p> : null}
     </div>
